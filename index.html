@@ -5,120 +5,182 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>上海迪士尼 排隊時間追蹤</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #ffffff; --bg2: #f5f5f5; --bg3: #eeeeee;
-    --text: #1a1a1a; --text2: #555555; --text3: #999999;
-    --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
-    --green: #1D9E75; --amber: #BA7517; --red: #E24B4A; --blue: #378ADD;
-    --radius: 8px; --radius-lg: 12px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1a1a1a; --bg2: #242424; --bg3: #2e2e2e;
-      --text: #f0f0f0; --text2: #aaaaaa; --text3: #666666;
-      --border: rgba(255,255,255,0.1); --border2: rgba(255,255,255,0.18);
-    }
-  }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding: 16px; max-width: 960px; margin: 0 auto; }
-  h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; }
-  .sub { font-size: 12px; color: var(--text3); margin-bottom: 16px; }
-  .top-bar { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
-  .badges { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .badge { font-size: 12px; padding: 4px 10px; border-radius: var(--radius); border: 0.5px solid; }
-  .badge-green { background: #e1f5ee; color: #0f6e56; border-color: #9fe1cb; }
-  .badge-red   { background: #fcebeb; color: #791f1f; border-color: #f7c1c1; }
-  .badge-gray  { background: var(--bg2); color: var(--text2); border-color: var(--border2); }
-  @media (prefers-color-scheme: dark) {
-    .badge-green { background: #085041; color: #5dcaa5; border-color: #0f6e56; }
-    .badge-red   { background: #501313; color: #f09595; border-color: #a32d2d; }
-  }
-  button { font-size: 13px; padding: 6px 14px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text2); cursor: pointer; transition: background 0.15s; }
-  button:hover { background: var(--bg3); }
-  button.active { background: #e6f1fb; color: #185fa5; border-color: #85b7eb; }
-  @media (prefers-color-scheme: dark) { button.active { background: #042c53; color: #85b7eb; border-color: #185fa5; } }
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 16px; }
-  .metric { background: var(--bg2); border-radius: var(--radius); padding: 10px 14px; }
-  .metric-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
-  .metric-value { font-size: 24px; font-weight: 500; line-height: 1; }
-  .metric-sub { font-size: 11px; color: var(--text3); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-  .controls label { font-size: 12px; color: var(--text2); }
-  select { font-size: 13px; padding: 5px 8px; border-radius: var(--radius); border: 0.5px solid var(--border2); background: var(--bg); color: var(--text); max-width: 200px; }
-  .chart-wrap { position: relative; width: 100%; height: 280px; margin-bottom: 20px; }
-  .section-title { font-size: 14px; font-weight: 500; color: var(--text2); margin: 16px 0 8px; }
-  .rides-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-bottom: 20px; }
-  .ride-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
-  .ride-name { font-size: 11px; color: var(--text2); line-height: 1.4; min-height: 28px; margin-bottom: 6px; }
-  .ride-wait { font-size: 22px; font-weight: 500; }
-  .ride-wait.low    { color: var(--green); }
-  .ride-wait.mid    { color: var(--amber); }
-  .ride-wait.high   { color: var(--red); }
-  .ride-wait.closed { color: var(--text3); font-size: 13px; font-weight: 400; }
-  .ride-trend { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  table { width: 100%; font-size: 12px; border-collapse: collapse; }
-  th { text-align: left; font-weight: 400; color: var(--text3); padding: 5px 8px; border-bottom: 0.5px solid var(--border); }
-  td { padding: 6px 8px; border-bottom: 0.5px solid var(--border); color: var(--text); }
-  tr:last-child td { border-bottom: none; }
-  .notice { font-size: 12px; color: var(--text3); padding: 8px 0; border-top: 0.5px solid var(--border); margin-top: 20px; line-height: 1.6; }
-  .notice a { color: var(--blue); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f5;--bg3:#eee;
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --border:rgba(0,0,0,.1);--border2:rgba(0,0,0,.18);
+  --green:#1D9E75;--amber:#BA7517;--red:#E24B4A;--blue:#378ADD;
+  --r:8px;--rl:12px
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1a1a1a;--bg2:#242424;--bg3:#2e2e2e;
+    --text:#f0f0f0;--text2:#aaa;--text3:#666;
+    --border:rgba(255,255,255,.1);--border2:rgba(255,255,255,.18)}
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg);color:var(--text);padding:14px;max-width:980px;margin:0 auto;font-size:14px}
+h1{font-size:19px;font-weight:500;margin-bottom:3px}
+.sub{font-size:12px;color:var(--text3);margin-bottom:14px}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.badges{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:4px}
+.badge{font-size:12px;padding:3px 10px;border-radius:var(--r);border:.5px solid}
+.bg{background:var(--bg2);color:var(--text2);border-color:var(--border2)}
+.bgreen{background:#e1f5ee;color:#0f6e56;border-color:#9fe1cb}
+.bred{background:#fcebeb;color:#791f1f;border-color:#f7c1c1}
+@media(prefers-color-scheme:dark){
+  .bgreen{background:#085041;color:#5dcaa5;border-color:#0f6e56}
+  .bred{background:#501313;color:#f09595;border-color:#a32d2d}
+}
+button{font-size:12px;padding:5px 13px;border-radius:var(--r);border:.5px solid var(--border2);
+  background:var(--bg);color:var(--text2);cursor:pointer;transition:background .15s}
+button:hover{background:var(--bg3)}
+button.on{background:#e6f1fb;color:#185fa5;border-color:#85b7eb}
+@media(prefers-color-scheme:dark){button.on{background:#042c53;color:#85b7eb;border-color:#185fa5}}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:7px;margin-bottom:14px}
+.metric{background:var(--bg2);border-radius:var(--r);padding:9px 12px}
+.mlabel{font-size:11px;color:var(--text3);margin-bottom:3px}
+.mval{font-size:22px;font-weight:500;line-height:1}
+.msub{font-size:10px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctrls{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:7px}
+.ctrls label{font-size:12px;color:var(--text2)}
+select{font-size:12px;padding:5px 7px;border-radius:var(--r);border:.5px solid var(--border2);
+  background:var(--bg);color:var(--text);max-width:210px}
+.chart-wrap{position:relative;width:100%;height:260px;margin-bottom:18px}
+.stitle{font-size:13px;font-weight:500;color:var(--text2);margin:14px 0 7px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:7px;margin-bottom:18px}
+.card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:9px 11px}
+.cname{font-size:11px;color:var(--text2);line-height:1.35;min-height:28px;margin-bottom:5px}
+.cwait{font-size:21px;font-weight:500}
+.cwait.low{color:var(--green)}.cwait.mid{color:var(--amber)}.cwait.high{color:var(--red)}
+.cwait.closed{color:var(--text3);font-size:12px;font-weight:400}
+.ctrend{font-size:10px;color:var(--text3);margin-top:2px}
+.timer-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);margin-bottom:10px}
+.pbar{flex:1;height:4px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.pfill{height:100%;background:var(--blue);border-radius:2px;transition:width 1s linear}
+table{width:100%;font-size:12px;border-collapse:collapse}
+th{text-align:left;font-weight:400;color:var(--text3);padding:5px 7px;border-bottom:.5px solid var(--border)}
+td{padding:5px 7px;border-bottom:.5px solid var(--border);color:var(--text)}
+tr:last-child td{border-bottom:none}
+.note{font-size:11px;color:var(--text3);margin-top:14px;padding-top:10px;border-top:.5px solid var(--border);line-height:1.7}
+.tag-low{color:var(--green)}.tag-mid{color:var(--amber)}.tag-high{color:var(--red)}
 </style>
 </head>
 <body>
 
-<div class="top-bar">
+<div class="topbar">
   <div>
     <h1>上海迪士尼 排隊時間追蹤</h1>
-    <div class="sub">每5分鐘自動更新 · 資料來源：queue-times.com</div>
+    <div class="sub">每5分鐘自動抓取 · 顯示當日歷史資料 · 來源：queue-times.com</div>
   </div>
   <div class="badges">
-    <span class="badge badge-gray" id="park-status">載入中...</span>
-    <span class="badge badge-gray" id="last-update">尚未更新</span>
+    <span class="badge bg" id="status">載入中...</span>
+    <span class="badge bg" id="lastup">尚未更新</span>
     <button onclick="fetchNow()">立即更新</button>
   </div>
 </div>
 
-<div class="metrics">
-  <div class="metric"><div class="metric-label">平均等候</div><div class="metric-value" id="avg-wait">—</div><div class="metric-sub">分鐘</div></div>
-  <div class="metric"><div class="metric-label">最長等候</div><div class="metric-value" id="max-wait">—</div><div class="metric-sub" id="max-name">—</div></div>
-  <div class="metric"><div class="metric-label">最短等候</div><div class="metric-value" id="min-wait">—</div><div class="metric-sub" id="min-name">—</div></div>
-  <div class="metric"><div class="metric-label">開放設施</div><div class="metric-value" id="open-count">—</div><div class="metric-sub">個</div></div>
-  <div class="metric"><div class="metric-label">已收集</div><div class="metric-value" id="snap-count">0</div><div class="metric-sub">筆快照</div></div>
+<div class="timer-bar">
+  <span>下次更新：<b id="countdown">5:00</b></span>
+  <div class="pbar"><div class="pfill" id="pfill" style="width:100%"></div></div>
 </div>
 
-<div class="controls">
+<div class="metrics">
+  <div class="metric"><div class="mlabel">平均等候</div><div class="mval" id="m-avg">—</div><div class="msub">分鐘</div></div>
+  <div class="metric"><div class="mlabel">最長等候</div><div class="mval" id="m-max">—</div><div class="msub" id="m-maxn">—</div></div>
+  <div class="metric"><div class="mlabel">最短等候</div><div class="mval" id="m-min">—</div><div class="msub" id="m-minn">—</div></div>
+  <div class="metric"><div class="mlabel">開放設施</div><div class="mval" id="m-open">—</div><div class="msub">個</div></div>
+  <div class="metric"><div class="mlabel">今日快照</div><div class="mval" id="m-snaps">0</div><div class="msub">筆</div></div>
+</div>
+
+<div class="ctrls">
   <label>趨勢圖：</label>
-  <button id="btn-single" class="active" onclick="setView('single')">單一設施</button>
-  <button id="btn-top5"   onclick="setView('top5')">熱門 TOP 5</button>
-  <select id="ride-select" onchange="renderChart()"></select>
+  <button id="btn-s" class="on" onclick="setView('single')">單一設施</button>
+  <button id="btn-t" onclick="setView('top5')">熱門 TOP5</button>
+  <select id="rsel" onchange="renderChart()"></select>
 </div>
 <div class="chart-wrap"><canvas id="chart"></canvas></div>
 
-<div class="section-title">即時等候時間</div>
-<div class="rides-grid" id="rides-grid"><div style="color:var(--text3);font-size:13px;padding:8px;">正在載入...</div></div>
+<div class="stitle">即時等候時間</div>
+<div class="grid" id="grid"><div style="color:var(--text3);padding:8px">正在載入...</div></div>
 
-<div class="section-title">歷史快照紀錄</div>
+<div class="stitle">當日歷史紀錄 <span style="font-size:11px;font-weight:400;color:var(--text3)" id="date-label"></span></div>
 <table>
-  <thead><tr><th>時間（上海）</th><th>平均（分）</th><th>最長（分）</th><th>最長設施</th><th>開放數</th></tr></thead>
-  <tbody id="log-body"><tr><td colspan="5" style="color:var(--text3);text-align:center;padding:12px;">尚無紀錄</td></tr></tbody>
+  <thead>
+    <tr><th>時間</th><th>平均（分）</th><th>最長（分）</th><th>最長設施</th><th>最短（分）</th><th>開放數</th></tr>
+  </thead>
+  <tbody id="log"></tbody>
 </table>
 
-<div class="notice" id="notice"></div>
+<div class="note" id="note"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+// ── 設施名稱中文對照表 ─────────────────────────────────────
+const ZH = {
+  "TRON Lightcycle Power Run – Presented by Chevrolet": "創極速光輪",
+  "Rex's Racer": "抱抱龍冲天賽車",
+  "Seven Dwarfs Mine Train": "七個小矮人礦山車",
+  "Zootopia: Hot Pursuit": "瘋狂動物城：熱力追蹤",
+  "Soaring Over the Horizon": "翱翔・飛越地平線",
+  "Roaring Rapids": "雷鳴山漂流",
+  "Pirates of the Caribbean Battle for the Sunken Treasure": "加勒比海盜：沉落寶藏之戰",
+  "Peter Pan's Flight": "小飛俠天空奇遇",
+  "The Many Adventures of Winnie the Pooh": "小熊維尼歷險記",
+  "Buzz Lightyear Planet Rescue": "巴斯光年星際營救",
+  "Dumbo the Flying Elephant": "小飛象",
+  "Fantasia Carousel": "幻想曲旋轉木馬",
+  "Hunny Pot Spin": "旋轉瘋蜜罐",
+  "Slinky Dog Spin": "彈簧狗團團轉",
+  "Woody's Roundup": "胡迪牛仔嘉年華",
+  "Voyage to the Crystal Grotto": "晶彩奇航",
+  "Explorer Canoes": "探險家獨木舟",
+  "Challenge Trails at Camp Discovery": "古跡探索營繩索挑戰道",
+  "Jet Packs": "噴射背包飛行器",
+  "Stitch Encounter": "太空對話史迪奇",
+  "TRON Realm, Chevrolet Digital Challenge": "創界數字挑戰",
+  "Alice in Wonderland Maze": "愛麗絲夢遊仙境迷宮",
+  "Shipwreck Shore": "船奇戲水灘",
+  "Siren's Revenge": "探秘海妖復仇號",
+  "Marvel Universe": "漫威英雄總部",
+  "Become Iron Man": "漫威英雄總部・變身鋼鐵俠",
+  "Vista Trail at Camp Discovery": "古跡探索營探索步行道",
+  "Camp Discovery": "古跡探索營",
+  "Selfie Spot with Spider Man": "蜘蛛人自拍點",
+  "Selfie Spot with Mickey": "米奇自拍點",
+  "Selfie Spot with Princesses": "公主自拍點",
+  "Selfie Spot with Disney Jungle Characters": "叢林角色自拍點",
+};
+function zh(name){ return ZH[name] || name; }
+
+// ── 全局狀態 ──────────────────────────────────────────────
 const PROXIES = [
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  url => url
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => u
 ];
 const API = 'https://queue-times.com/parks/30/queue_times.json';
-let snapshots = [], chart = null, view = 'single', timer = null;
+const INTERVAL = 5 * 60; // 秒
+let snapshots = [];   // 當日快照
+let chart = null;
+let view = 'single';
+let secsLeft = INTERVAL;
+let tickTimer = null;
+let fetchTimer = null;
+let today = shanghaiDate();
 
-function shanghaiFmt(d) {
-  return new Date(d).toLocaleTimeString('zh-TW', { timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit' });
+// ── 上海日期 ──────────────────────────────────────────────
+function shanghaiDate() {
+  return new Date().toLocaleDateString('zh-TW', { timeZone: 'Asia/Shanghai' });
+}
+function shanghaiTime(ms) {
+  return new Date(ms).toLocaleTimeString('zh-TW', { timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit' });
+}
+function shanghaiFull(ms) {
+  return new Date(ms).toLocaleString('zh-TW', { timeZone: 'Asia/Shanghai' });
 }
 
+// ── 抓取資料 ──────────────────────────────────────────────
 async function fetchData() {
   for (const proxy of PROXIES) {
     try {
@@ -128,16 +190,43 @@ async function fetchData() {
       const rides = [];
       for (const land of (json.lands || [])) {
         for (const r of (land.rides || [])) {
-          rides.push({ name: r.name, wait: r.is_open ? (r.wait_time ?? 0) : null, open: r.is_open });
+          if (r.name.startsWith('[Archived]')) continue;
+          rides.push({
+            name: r.name,
+            zhName: zh(r.name),
+            wait: r.is_open ? (r.wait_time ?? 0) : null,
+            open: r.is_open
+          });
         }
       }
-      return { time: Date.now(), rides, parkOpen: json.is_open ?? true, source: proxy === PROXIES[2] ? 'direct' : 'proxy' };
+      return { time: Date.now(), rides, parkOpen: json.is_open ?? true };
     } catch(e) { continue; }
   }
   return null;
 }
 
-function trendArrow(name) {
+// ── 每日重置 ──────────────────────────────────────────────
+function checkDayReset() {
+  const d = shanghaiDate();
+  if (d !== today) { today = d; snapshots = []; }
+}
+
+// ── 倒數計時器 ────────────────────────────────────────────
+function startTick() {
+  if (tickTimer) clearInterval(tickTimer);
+  secsLeft = INTERVAL;
+  tickTimer = setInterval(() => {
+    secsLeft = Math.max(0, secsLeft - 1);
+    const m = Math.floor(secsLeft / 60);
+    const s = secsLeft % 60;
+    document.getElementById('countdown').textContent = m + ':' + String(s).padStart(2,'0');
+    const pct = (secsLeft / INTERVAL) * 100;
+    document.getElementById('pfill').style.width = pct + '%';
+  }, 1000);
+}
+
+// ── 趨勢箭頭 ─────────────────────────────────────────────
+function trendOf(name) {
   if (snapshots.length < 2) return '';
   const a = snapshots.at(-1).rides.find(r => r.name === name);
   const b = snapshots.at(-2).rides.find(r => r.name === name);
@@ -145,142 +234,156 @@ function trendArrow(name) {
   const d = a.wait - b.wait;
   if (d > 3)  return `↑ +${d}m`;
   if (d < -3) return `↓ ${d}m`;
-  return '→';
+  return '→ 持平';
 }
 
+// ── 渲染設施卡片 ─────────────────────────────────────────
 function renderCards() {
-  const latest = snapshots.at(-1);
-  if (!latest) return;
-  document.getElementById('rides-grid').innerHTML = latest.rides.map(r => {
+  const s = snapshots.at(-1); if (!s) return;
+  document.getElementById('grid').innerHTML = s.rides.map(r => {
     const cls = r.wait == null ? 'closed' : r.wait <= 20 ? 'low' : r.wait <= 45 ? 'mid' : 'high';
     const txt = r.wait == null ? '暫停' : r.wait + ' 分';
-    return `<div class="ride-card">
-      <div class="ride-name">${r.name}</div>
-      <div class="ride-wait ${cls}">${txt}</div>
-      <div class="ride-trend">${trendArrow(r.name)}</div>
+    return `<div class="card">
+      <div class="cname">${r.zhName}</div>
+      <div class="cwait ${cls}">${txt}</div>
+      <div class="ctrend">${trendOf(r.name)}</div>
     </div>`;
   }).join('');
 }
 
+// ── 渲染指標 ─────────────────────────────────────────────
 function renderMetrics() {
-  const s = snapshots.at(-1);
-  if (!s) return;
+  const s = snapshots.at(-1); if (!s) return;
   const open = s.rides.filter(r => r.wait != null);
   if (!open.length) return;
-  const avg = Math.round(open.reduce((a,r) => a + r.wait, 0) / open.length);
+  const avg = Math.round(open.reduce((a,r) => a+r.wait, 0) / open.length);
   const maxR = open.reduce((a,b) => b.wait > a.wait ? b : a);
   const minR = open.reduce((a,b) => b.wait < a.wait ? b : a);
-  document.getElementById('avg-wait').textContent = avg;
-  document.getElementById('max-wait').textContent = maxR.wait;
-  document.getElementById('min-wait').textContent = minR.wait;
-  document.getElementById('max-name').textContent = maxR.name.length > 10 ? maxR.name.slice(0,10)+'…' : maxR.name;
-  document.getElementById('min-name').textContent = minR.name.length > 10 ? minR.name.slice(0,10)+'…' : minR.name;
-  document.getElementById('open-count').textContent = open.length;
-  document.getElementById('snap-count').textContent = snapshots.length;
+  document.getElementById('m-avg').textContent  = avg;
+  document.getElementById('m-max').textContent  = maxR.wait;
+  document.getElementById('m-min').textContent  = minR.wait;
+  document.getElementById('m-maxn').textContent = maxR.zhName.length>9 ? maxR.zhName.slice(0,9)+'…' : maxR.zhName;
+  document.getElementById('m-minn').textContent = minR.zhName.length>9 ? minR.zhName.slice(0,9)+'…' : minR.zhName;
+  document.getElementById('m-open').textContent = open.length;
+  document.getElementById('m-snaps').textContent= snapshots.length;
 }
 
-function populateSelect() {
+// ── 下拉選單 ─────────────────────────────────────────────
+function populateSel() {
   const s = snapshots.at(-1); if (!s) return;
-  const sel = document.getElementById('ride-select');
+  const sel = document.getElementById('rsel');
   const cur = sel.value;
   sel.innerHTML = s.rides.filter(r => r.wait != null)
-    .map(r => `<option value="${r.name}" ${r.name===cur?'selected':''}>${r.name}</option>`).join('');
+    .map(r => `<option value="${r.name}" ${r.name===cur?'selected':''}>${r.zhName}</option>`)
+    .join('');
 }
 
-function top5Names() {
+function top5() {
   const s = snapshots.at(-1); if (!s) return [];
-  return [...s.rides].filter(r => r.wait != null).sort((a,b) => b.wait-a.wait).slice(0,5).map(r => r.name);
+  return [...s.rides].filter(r => r.wait != null)
+    .sort((a,b) => b.wait - a.wait).slice(0,5).map(r => r.name);
 }
 
+// ── 趨勢圖 ───────────────────────────────────────────────
 function renderChart() {
-  const labels = snapshots.map(s => shanghaiFmt(s.time));
-  const COLORS = ['#E24B4A','#BA7517','#378ADD','#1D9E75','#7F77DD'];
+  const labels = snapshots.map(s => shanghaiTime(s.time));
+  const COLS = ['#E24B4A','#BA7517','#378ADD','#1D9E75','#7F77DD'];
   let datasets;
   if (view === 'top5') {
-    datasets = top5Names().map((name,i) => ({
-      label: name,
-      data: snapshots.map(s => { const r = s.rides.find(x => x.name===name); return r?.wait ?? null; }),
-      borderColor: COLORS[i], backgroundColor: COLORS[i]+'18',
-      borderWidth: 2, pointRadius: 3, tension: 0.35, spanGaps: true
+    datasets = top5().map((name,i) => ({
+      label: zh(name),
+      data: snapshots.map(s => { const r = s.rides.find(x=>x.name===name); return r?.wait??null; }),
+      borderColor: COLS[i], backgroundColor: COLS[i]+'18',
+      borderWidth:2, pointRadius:3, tension:.35, spanGaps:true
     }));
   } else {
-    const name = document.getElementById('ride-select').value;
+    const name = document.getElementById('rsel').value;
     datasets = [{
-      label: name,
-      data: snapshots.map(s => { const r = s.rides.find(x => x.name===name); return r?.wait ?? null; }),
-      borderColor: '#378ADD', backgroundColor: '#378ADD18',
-      borderWidth: 2, pointRadius: 4, tension: 0.35, fill: true, spanGaps: true
+      label: zh(name),
+      data: snapshots.map(s => { const r = s.rides.find(x=>x.name===name); return r?.wait??null; }),
+      borderColor:'#378ADD', backgroundColor:'#378ADD18',
+      borderWidth:2, pointRadius:4, tension:.35, fill:true, spanGaps:true
     }];
   }
   if (chart) chart.destroy();
   chart = new Chart(document.getElementById('chart'), {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: view==='top5', labels: { font:{size:11}, boxWidth:10, padding:8 } },
-        tooltip: { callbacks: { label: c => c.dataset.label+': '+c.parsed.y+' 分鐘' } }
+    type:'line', data:{ labels, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ display: view==='top5', labels:{font:{size:11},boxWidth:10,padding:8} },
+        tooltip:{ callbacks:{ label: c => c.dataset.label+': '+c.parsed.y+' 分鐘' } }
       },
-      scales: {
-        y: { min: 0, ticks: { font:{size:11}, callback: v => v+'m' }, title: { display:true, text:'等候（分）', font:{size:11} } },
-        x: { ticks: { font:{size:10}, autoSkip:true, maxTicksLimit:10 } }
+      scales:{
+        y:{ min:0, ticks:{font:{size:11}, callback:v=>v+'m'},
+            title:{display:true,text:'等候（分）',font:{size:11}} },
+        x:{ ticks:{font:{size:10},autoSkip:true,maxTicksLimit:12} }
       }
     }
   });
 }
 
+// ── 歷史紀錄表格 ─────────────────────────────────────────
 function renderLog() {
-  const rows = [...snapshots].reverse().slice(0,30).map(s => {
+  document.getElementById('date-label').textContent = '（' + today + ' 上海時間）';
+  const rows = [...snapshots].reverse().map(s => {
     const open = s.rides.filter(r => r.wait != null);
-    const avg = open.length ? Math.round(open.reduce((a,r)=>a+r.wait,0)/open.length) : '—';
+    const avg  = open.length ? Math.round(open.reduce((a,r)=>a+r.wait,0)/open.length) : null;
     const maxR = open.length ? open.reduce((a,b)=>b.wait>a.wait?b:a) : null;
+    const minR = open.length ? open.reduce((a,b)=>b.wait<a.wait?b:a) : null;
+    const avgC = avg==null?'':avg<=20?'tag-low':avg<=45?'tag-mid':'tag-high';
     return `<tr>
-      <td>${shanghaiFmt(s.time)}</td>
-      <td>${avg}</td>
-      <td>${maxR?maxR.wait:'—'}</td>
-      <td style="font-size:11px;color:var(--text3)">${maxR?maxR.name:'—'}</td>
+      <td>${shanghaiTime(s.time)}</td>
+      <td class="${avgC}">${avg??'—'}</td>
+      <td class="tag-high">${maxR?maxR.wait:'—'}</td>
+      <td style="font-size:11px;color:var(--text3)">${maxR?maxR.zhName:'—'}</td>
+      <td class="tag-low">${minR?minR.wait:'—'}</td>
       <td>${open.length}</td>
     </tr>`;
   }).join('');
-  document.getElementById('log-body').innerHTML = rows || '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:12px">尚無紀錄</td></tr>';
+  document.getElementById('log').innerHTML = rows ||
+    '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:12px">尚無紀錄</td></tr>';
 }
 
 function setView(v) {
   view = v;
-  document.getElementById('btn-single').classList.toggle('active', v==='single');
-  document.getElementById('btn-top5').classList.toggle('active', v==='top5');
-  document.getElementById('ride-select').style.display = v==='single' ? '' : 'none';
+  document.getElementById('btn-s').classList.toggle('on', v==='single');
+  document.getElementById('btn-t').classList.toggle('on', v==='top5');
+  document.getElementById('rsel').style.display = v==='single' ? '' : 'none';
   renderChart();
 }
 
+// ── 主要更新流程 ─────────────────────────────────────────
 async function fetchNow() {
-  document.getElementById('notice').textContent = '正在抓取資料...';
+  checkDayReset();
+  document.getElementById('note').textContent = '正在抓取資料...';
+  startTick();
   const data = await fetchData();
   if (!data) {
-    document.getElementById('notice').innerHTML = '⚠ 無法連接 queue-times.com（可能是網路或 CORS 問題）。請確認網路正常，或改用手機瀏覽器開啟。';
+    document.getElementById('note').textContent =
+      '⚠ 無法連接 queue-times.com，可能是網路問題或 CORS 限制。將於 5 分鐘後自動重試。';
     return;
   }
   snapshots.push(data);
-  if (snapshots.length > 288) snapshots.shift();
-  const statusEl = document.getElementById('park-status');
-  statusEl.textContent = data.parkOpen ? '公園開放中' : '公園已關閉';
-  statusEl.className = 'badge ' + (data.parkOpen ? 'badge-green' : 'badge-red');
-  document.getElementById('last-update').textContent = '更新 ' + shanghaiFmt(data.time);
-  document.getElementById('notice').textContent = `最後更新：${new Date(data.time).toLocaleString('zh-TW',{timeZone:'Asia/Shanghai'})}（上海時間）`;
-  populateSelect();
+  if (snapshots.length > 500) snapshots.shift();
+
+  const st = document.getElementById('status');
+  st.textContent = data.parkOpen ? '公園開放中' : '公園已關閉';
+  st.className = 'badge ' + (data.parkOpen ? 'bgreen' : 'bred');
+  document.getElementById('lastup').textContent = '更新 ' + shanghaiTime(data.time);
+  document.getElementById('note').textContent =
+    '最後更新：' + shanghaiFull(data.time) + '（上海時間）';
+
+  populateSel();
   renderCards();
   renderMetrics();
   renderChart();
   renderLog();
 }
 
-function start() {
-  fetchNow();
-  timer = setInterval(fetchNow, 5 * 60 * 1000);
-}
-
-start();
+// ── 啟動 ─────────────────────────────────────────────────
+fetchNow();
+fetchTimer = setInterval(fetchNow, INTERVAL * 1000);
 </script>
 </body>
 </html>
